@@ -1,0 +1,40 @@
+# Release Notes — v0.6.3
+
+**SSAKLICA — Multi Generation Samsung Channel Editor**
+
+## Added
+
+- **Legacy SCM channel deletion** for the currently verified `map-CableD` (320-byte) and `map-SateD` (168-byte) profiles.
+- Multi-selection is now enabled for Legacy SCM lists.
+- **Tip** column showing service types such as TV, HD, Radyo and Data.
+- **Kanal tipi filter** to quickly list only a selected service type.
+- Legacy source information is shown separately from the service type (for example `TV / Dijital Kablo · Record 25`).
+
+## Legacy SCM deletion behavior
+
+Deletion uses the format-native status fields defined for the verified Samsung SCM record profiles. For `map-CableD` / 320-byte records, the Deleted flag at offset 8 is set. For `map-SateD` / 168-byte records, the InUse bit at offset 7 is cleared. Records remain at their original physical positions; only the documented status field and the record checksum are changed. If the visible list is renumbered, changed channel numbers and names also receive recalculated checksums before export.
+
+The generated SCM is reopened in the browser and validated before download. Validation checks:
+
+- the expected Deleted/InUse status bit is written for selected channels;
+- record physical positions and unrelated bytes remain unchanged;
+- planned channel order and renamed channel names are present;
+- active record checksums are valid;
+- other archive entries are preserved byte-for-byte.
+
+## Modern Samsung behavior
+
+No permanent-delete implementation was added to Modern SQLite/TKGS lists in this release. Modern lists keep the existing experimental hide/restore behavior. This distinction is intentional because TKGS may recreate or override removed services.
+
+## Compatibility status
+
+### Verified in this project
+
+- Samsung **UE46F6400** — Legacy SCM multi-list (`map-CableD`, `map-SateD`)
+- Samsung **QE55LS03DAUXTK** — Modern SQLite/TKGS export format
+
+Other Samsung models may use the same structures, but compatibility should be treated as format-based rather than guaranteed solely by model year/series.
+
+## Notes
+
+The application remains browser-only and installation-free. Selected TV channel-list files are processed locally in browser memory. The application does not upload the channel list to an application server. CDN-hosted JSZip/sql.js libraries are still used by the current build, so the first load may require internet access.
